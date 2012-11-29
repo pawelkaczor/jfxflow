@@ -1,0 +1,36 @@
+.error-page {
+    -fx-skin: "com.zenjava.jfxflow.control.ErrorPageSkin";
+}
+
+.error-page .error-header {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.error-page .error-info {
+    -fx-font-weight: normal;
+}
+
+.error-page .error-detail {
+    -fx-border-color: #ddd;
+    -fx-border-radius: 10;
+    -fx-background-color: #ffe;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.error-page .error-message,
+.error-page .error-message:focused {
+    -fx-font-weight: bold;
+    -fx-background-color: #ffe;
+    -fx-background-insets: 0;
+}
+
+.error-page .error-stack-trace,
+.error-page .error-stack-trace:focused {
+    -fx-text-fill: #ddd;
+    -fx-background-color: #ffe;
+    -fx-background-insets: 0;
+}
+
+
