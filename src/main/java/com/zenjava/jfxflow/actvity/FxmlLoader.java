@@ -3,14 +3,24 @@ package com.zenjava.jfxflow.actvity;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 public class FxmlLoader
 {
+    private Callback<Class<?>, Object> controllerFactory = null;
+
+    public FxmlLoader() {}
+
+    public FxmlLoader(javafx.util.Callback<java.lang.Class<?>,java.lang.Object> controllerFactory) {
+        this.controllerFactory = controllerFactory;
+    }
+
     @SuppressWarnings("unchecked")
     public <Type extends Activity> Type load(String fxmlFile)
             throws FxmlLoadException
@@ -42,6 +52,9 @@ public class FxmlLoader
             fxmlStream = getClass().getResourceAsStream(fxmlFile);
             FXMLLoader loader = new FXMLLoader();
             loader.setBuilderFactory(new JavaFXBuilderFactory());
+            if (controllerFactory != null) {
+                loader.setControllerFactory(controllerFactory);
+            }
 
             loader.setLocation(getClass().getResource(fxmlFile));
 
@@ -95,4 +108,27 @@ public class FxmlLoader
             }
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public <Type extends Activity> Type load(URL fxmlFile, ResourceBundle resources, Map<String, Object> variables)
+            throws FxmlLoadException {
+        FXMLLoader loader = new FXMLLoader(fxmlFile, resources, new JavaFXBuilderFactory(), controllerFactory);
+        Node rootNode;
+        try {
+            rootNode = (Node) loader.load();
+        } catch (IOException e) {
+            throw new FxmlLoadException("", e);
+        }
+
+        Type controller = (Type) loader.getController();
+        if (controller instanceof InjectedView) {
+            if (rootNode instanceof View) {
+                ((InjectedView) controller).setView((View) rootNode);
+            } else {
+                ((InjectedView) controller).setView(new SimpleView(rootNode));
+            }
+        }
+        return controller;
+    }
+
 }
