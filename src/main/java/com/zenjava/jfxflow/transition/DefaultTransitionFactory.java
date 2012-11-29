@@ -1,6 +1,7 @@
 package com.zenjava.jfxflow.transition;
 
 import com.zenjava.jfxflow.actvity.Activity;
+import com.zenjava.jfxflow.actvity.FxAnimation;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.SequentialTransition;
@@ -8,12 +9,12 @@ import javafx.animation.Transition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 public class DefaultTransitionFactory implements TransitionFactory
 {
-    public Animation createTransition(final StackPane container,
+    public com.zenjava.jfxflow.actvity.Transition createTransition(final Pane container,
                                       final Activity fromActivity,
                                       Activity toActivity)
     {
@@ -72,7 +73,7 @@ public class DefaultTransitionFactory implements TransitionFactory
             }
         });
 
-        return transition;
+        return new FxAnimation(transition);
     }
 
     protected Transition createMainTransition(Activity fromActivity, Activity toActivity)
@@ -94,7 +95,7 @@ public class DefaultTransitionFactory implements TransitionFactory
 
     protected ViewTransition getDefaultExitTransition(Node node)
     {
-        return new FadeOutTransition(node, Duration.millis(300));    
+        return new FadeOutTransition(node, Duration.millis(300));
     }
 
     protected void addAnimation(Transition transition, Animation child)

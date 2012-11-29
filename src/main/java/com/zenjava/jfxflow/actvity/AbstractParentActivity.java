@@ -1,7 +1,6 @@
 package com.zenjava.jfxflow.actvity;
 
 import com.zenjava.jfxflow.util.ListBinding;
-import javafx.animation.Animation;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,13 +13,13 @@ public abstract class AbstractParentActivity<ViewType extends View>
         extends AbstractActivity<ViewType> implements HasTransition
 {
     private ObjectProperty<Activity> currentActivity;
-    private ObjectProperty<Animation> currentTransition;
+    private ObjectProperty<Transition> currentTransition;
     private ListBinding<Worker> workerListBinding;
 
     public AbstractParentActivity()
     {
         this.currentActivity = new SimpleObjectProperty<Activity>();
-        this.currentTransition = new SimpleObjectProperty<Animation>();
+        this.currentTransition = new SimpleObjectProperty<Transition>();
         this.workerListBinding = new ListBinding<Worker>(getWorkers());
     }
 
@@ -34,17 +33,17 @@ public abstract class AbstractParentActivity<ViewType extends View>
         return this.currentActivity;
     }
 
-    public ReadOnlyObjectProperty<Animation> currentTransitionProperty()
+    public ReadOnlyObjectProperty<Transition> currentTransitionProperty()
     {
         return currentTransition;
     }
 
-    public Animation getCurrentTransition()
+    public Transition getCurrentTransition()
     {
         return currentTransition.get();
     }
 
-    public void showActivity(Activity newActivity, Animation transition)
+    public void showActivity(Activity newActivity, Transition transition)
     {
         workerListBinding.unbind();
         final Activity oldActivity = currentActivity.get();
@@ -83,7 +82,7 @@ public abstract class AbstractParentActivity<ViewType extends View>
                     currentTransition.set(null);
                 }
             });
-            transition.play();
+            transition.execute();
         }
         else
         {

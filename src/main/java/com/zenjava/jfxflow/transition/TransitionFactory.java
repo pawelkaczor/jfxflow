@@ -1,10 +1,10 @@
 package com.zenjava.jfxflow.transition;
 
 import com.zenjava.jfxflow.actvity.Activity;
-import javafx.animation.Animation;
-import javafx.scene.layout.StackPane;
+import com.zenjava.jfxflow.actvity.Transition;
+import javafx.scene.layout.Pane;
 
 public interface TransitionFactory
 {
-    Animation createTransition(StackPane contentArea, Activity fromActivity, Activity toActivity);
+    Transition createTransition(Pane contentArea, Activity fromActivity, Activity toActivity);
 }

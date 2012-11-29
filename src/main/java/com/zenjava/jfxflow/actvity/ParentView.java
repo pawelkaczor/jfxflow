@@ -1,9 +1,9 @@
 package com.zenjava.jfxflow.actvity;
 
 import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 
 public interface ParentView<NodeType extends Node> extends View<NodeType>
 {
-    StackPane getChildArea();
+    Pane getChildArea();
 }

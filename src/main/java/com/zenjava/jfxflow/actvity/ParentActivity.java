@@ -5,7 +5,6 @@ import com.zenjava.jfxflow.navigation.PlaceResolver;
 import com.zenjava.jfxflow.transition.DefaultTransitionFactory;
 import com.zenjava.jfxflow.transition.TransitionFactory;
 import com.zenjava.jfxflow.util.ListBinding;
-import javafx.animation.Animation;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,7 +25,7 @@ public class ParentActivity<ViewType extends ParentView>
     private ObservableList<PlaceResolver> placeResolvers;
     private ObjectProperty<Activity> currentActivity;
     private ObjectProperty<TransitionFactory> transitionFactory;
-    private ObjectProperty<Animation> currentTransition;
+    private ObjectProperty<Transition> currentTransition;
 
     public ParentActivity()
     {
@@ -40,7 +39,7 @@ public class ParentActivity<ViewType extends ParentView>
         this.currentActivity = new SimpleObjectProperty<Activity>();
         this.transitionFactory = new SimpleObjectProperty<TransitionFactory>(
                 transitionFactory != null ? transitionFactory : new DefaultTransitionFactory());
-        this.currentTransition = new SimpleObjectProperty<Animation>();
+        this.currentTransition = new SimpleObjectProperty<Transition>();
 
         currentPlace.addListener(new CurrentPlaceListener());
         currentActivity.addListener(new CurrentActivityListener());
@@ -81,12 +80,12 @@ public class ParentActivity<ViewType extends ParentView>
         this.transitionFactory.set(transitionFactory);
     }
 
-    public ReadOnlyObjectProperty<Animation> currentTransitionProperty()
+    public ReadOnlyObjectProperty<Transition> currentTransitionProperty()
     {
         return currentTransition;
     }
 
-    public Animation getCurrentTransition()
+    public Transition getCurrentTransition()
     {
         return currentTransition.get();
     }
@@ -163,8 +162,12 @@ public class ParentActivity<ViewType extends ParentView>
                 ((Activatable) newActivity).activeProperty().bind(activeProperty());
             }
 
+            handleTransition(oldActivity, newActivity);
+        }
+
+        private void handleTransition(Activity oldActivity, Activity newActivity) {
             currentTransition.unbind();
-            Animation transition = transitionFactory.get().createTransition(
+            Transition transition = transitionFactory.get().createTransition(
                     getView().getChildArea(), oldActivity, newActivity);
             currentTransition.set(transition);
             final EventHandler<ActionEvent> originalOnFinished = transition.getOnFinished();
@@ -187,9 +190,7 @@ public class ParentActivity<ViewType extends ParentView>
                     }
                 }
             });
-            transition.play();
-
-
+            transition.execute();
         }
     }
 }
