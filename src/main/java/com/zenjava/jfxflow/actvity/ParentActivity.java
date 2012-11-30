@@ -45,6 +45,10 @@ public class ParentActivity<ViewType extends ParentView>
         currentActivity.addListener(new CurrentActivityListener());
     }
 
+    public void resetCurrentPlace() {
+        setCurrentPlace(null);
+    }
+
     public ObjectProperty<Place> currentPlaceProperty()
     {
         return currentPlace;
@@ -126,10 +130,12 @@ public class ParentActivity<ViewType extends ParentView>
                         return;
                     }
                 }
+                // no matching place
+                currentActivity.set(createUnsupportedPlaceActivity(newPlace));
+            } else {
+                currentActivity.set(null);
             }
 
-            // no matching place
-            currentActivity.set(createUnsupportedPlaceActivity(newPlace));
         }
     }
 
@@ -162,7 +168,9 @@ public class ParentActivity<ViewType extends ParentView>
                 ((Activatable) newActivity).activeProperty().bind(activeProperty());
             }
 
-            handleTransition(oldActivity, newActivity);
+            if (newActivity != null) {
+                handleTransition(oldActivity, newActivity);
+            }
         }
 
         private void handleTransition(Activity oldActivity, Activity newActivity) {

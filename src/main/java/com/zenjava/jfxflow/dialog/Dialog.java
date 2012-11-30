@@ -70,6 +70,10 @@ public class Dialog
         buildSkin();
     }
 
+    public ReadOnlyBooleanProperty showingProperty() {
+        return this.popup.showingProperty();
+    }
+
     public ReadOnlyObjectProperty<DialogOwner> ownerProperty()
     {
         return owner;
