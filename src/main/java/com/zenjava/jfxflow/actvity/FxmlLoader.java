@@ -3,6 +3,7 @@ package com.zenjava.jfxflow.actvity;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -73,14 +74,17 @@ public class FxmlLoader
             Type controller = (Type) loader.getController();
             if (controller instanceof InjectedView)
             {
-                View view;
                 if (rootNode instanceof View)
                 {
                     ((InjectedView) controller).setView((View) rootNode);
                 }
                 else
                 {
-                    ((InjectedView) controller).setView(new SimpleView(rootNode));
+                    if (controller instanceof ParentActivity) {
+                        ((InjectedView) controller).setView(new DefaultParentView((Pane)rootNode));
+                    } else {
+                        ((InjectedView) controller).setView(new SimpleView(rootNode));
+                    }
                 }
             }
             return controller;
@@ -125,7 +129,11 @@ public class FxmlLoader
             if (rootNode instanceof View) {
                 ((InjectedView) controller).setView((View) rootNode);
             } else {
-                ((InjectedView) controller).setView(new SimpleView(rootNode));
+                if (controller instanceof ParentActivity) {
+                    ((InjectedView) controller).setView(new DefaultParentView((Pane)rootNode));
+                } else {
+                    ((InjectedView) controller).setView(new SimpleView(rootNode));
+                }
             }
         }
         return controller;
