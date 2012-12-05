@@ -48,7 +48,7 @@ public class DefaultTransitionFactory implements TransitionFactory
             }
             entry.setupBeforeAnimation(container.getBoundsInParent());
             addAnimation(transition, entry.getAnimation());
-            container.getChildren().add(toActivity.getView().toNode());
+            addView(container, toActivity.getView().toNode());
         }
 
         final ViewTransition finalExit = exit;
@@ -59,7 +59,7 @@ public class DefaultTransitionFactory implements TransitionFactory
             {
                 if (fromActivity != null)
                 {
-                    container.getChildren().remove(fromActivity.getView().toNode());
+                    removeView(container, fromActivity.getView().toNode());
                 }
 
                 if (finalEntry != null)
@@ -74,6 +74,14 @@ public class DefaultTransitionFactory implements TransitionFactory
         });
 
         return new FxAnimation(transition);
+    }
+
+    protected void addView(Pane container, Node node) {
+        container.getChildren().add(node);
+    }
+
+    protected void removeView(Pane container, Node node) {
+        container.getChildren().remove(node);
     }
 
     protected Transition createMainTransition(Activity fromActivity, Activity toActivity)
