@@ -9,9 +9,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
+import javafx.fxml.Initializable;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public abstract class AbstractActivity<ViewType extends View>
-        implements InjectedView<ViewType>, Activatable, HasWorkers, Releasable
+        implements InjectedView<ViewType>, Activatable, HasWorkers, Releasable, Initializable
 {
     private ViewType view;
     private BooleanProperty active;
@@ -117,4 +121,13 @@ public abstract class AbstractActivity<ViewType extends View>
             }
         });
     }
+
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        initialize();
+    }
+
+    protected void initialize() {
+        // do nothing
+    }
+
 }
