@@ -7,114 +7,30 @@ import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class FxmlLoader
-{
-    private Callback<Class<?>, Object> controllerFactory = null;
+public class FxmlLoader {
+    private final Callback<Class<?>, Object> controllerFactory;
+    private final Map<URL, Activity> activities = new HashMap<URL, Activity>();
 
-    public FxmlLoader() {}
-
-    public FxmlLoader(javafx.util.Callback<java.lang.Class<?>,java.lang.Object> controllerFactory) {
+    public FxmlLoader(javafx.util.Callback<java.lang.Class<?>, java.lang.Object> controllerFactory) {
         this.controllerFactory = controllerFactory;
     }
 
     @SuppressWarnings("unchecked")
-    public <Type extends Activity> Type load(String fxmlFile)
-            throws FxmlLoadException
-    {
-        return (Type) load(fxmlFile, null, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <Type extends Activity> Type load(String fxmlFile, String resourceBundle)
-            throws FxmlLoadException
-    {
-        return (Type) load(fxmlFile, ResourceBundle.getBundle(resourceBundle), null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <Type extends Activity> Type load(String fxmlFile, ResourceBundle resourceBundle)
-            throws FxmlLoadException
-    {
-        return (Type) load(fxmlFile, resourceBundle, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <Type extends Activity> Type load(String fxmlFile, ResourceBundle resources, Map<String, Object> variables)
-            throws FxmlLoadException
-    {
-        InputStream fxmlStream = null;
-        try
-        {
-            fxmlStream = getClass().getResourceAsStream(fxmlFile);
-            FXMLLoader loader = new FXMLLoader();
-            loader.setBuilderFactory(new JavaFXBuilderFactory());
-            if (controllerFactory != null) {
-                loader.setControllerFactory(controllerFactory);
-            }
-
-            loader.setLocation(getClass().getResource(fxmlFile));
-
-            if (resources != null)
-            {
-                loader.setResources(resources);
-            }
-
-            if (variables != null)
-            {
-                loader.getNamespace().putAll(variables);
-            }
-
-            Node rootNode = (Node) loader.load(fxmlStream);
-
-            Type controller = (Type) loader.getController();
-            if (controller instanceof InjectedView)
-            {
-                if (rootNode instanceof View)
-                {
-                    ((InjectedView) controller).setView((View) rootNode);
-                }
-                else
-                {
-                    if (controller instanceof ParentActivity) {
-                        ((InjectedView) controller).setView(new DefaultParentView((Pane)rootNode));
-                    } else {
-                        ((InjectedView) controller).setView(new SimpleView(rootNode));
-                    }
-                }
-            }
-            return controller;
+    public <Type extends Activity> Type load(URL fxmlFile, ResourceBundle resources)
+            throws FxmlLoadException {
+        if (!activities.containsKey(fxmlFile)) {
+            reload(fxmlFile, resources);
         }
-        catch (Exception e)
-        {
-            // map checked exception to a runtime exception - this is a system failure, not a business logic failure
-            // so using checked exceptions for this is not necessary.
-            throw new FxmlLoadException(String.format(
-                    "Unable to load FXML from '%s': %s", fxmlFile, e.getMessage()), e);
-        }
-        finally
-        {
-            if (fxmlStream != null)
-            {
-                try
-                {
-                    fxmlStream.close();
-                }
-                catch (IOException e)
-                {
-                    System.err.println("WARNING: error closing FXML stream: " + e);
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
+        return (Type) activities.get(fxmlFile);
     }
 
     @SuppressWarnings("unchecked")
-    public <Type extends Activity> Type load(URL fxmlFile, ResourceBundle resources, Map<String, Object> variables)
+    public <Type extends Activity> void reload(URL fxmlFile, ResourceBundle resources)
             throws FxmlLoadException {
         FXMLLoader loader = new FXMLLoader(fxmlFile, resources, new JavaFXBuilderFactory(), controllerFactory);
         Node rootNode;
@@ -130,13 +46,17 @@ public class FxmlLoader
                 ((InjectedView) controller).setView((View) rootNode);
             } else {
                 if (controller instanceof ParentActivity) {
-                    ((InjectedView) controller).setView(new DefaultParentView((Pane)rootNode));
+                    ((InjectedView) controller).setView(new DefaultParentView((Pane) rootNode));
                 } else {
                     ((InjectedView) controller).setView(new SimpleView(rootNode));
                 }
             }
         }
-        return controller;
+        registerActivity(fxmlFile, controller);
+    }
+
+    private <Type extends Activity> void registerActivity(URL fxmlFile, Type activity) {
+        activities.put(fxmlFile, activity);
     }
 
 }

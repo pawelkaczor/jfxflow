@@ -25,7 +25,7 @@ public class SpringPlaceResolver extends AbstractPlaceResolver {
     @Override
     public Activity findActivity(Place place) {
         try {
-            return loader.load(context.getResource(place.getName()).getURL(), null, null);
+            return loader.load(context.getResource(place.getName()).getURL(), null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
