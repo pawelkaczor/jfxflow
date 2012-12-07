@@ -18,14 +18,16 @@ public abstract class AbstractActivity<ViewType extends View>
         implements InjectedView<ViewType>, Activatable, HasWorkers, Releasable, Initializable
 {
     private ViewType view;
-    private BooleanProperty active;
-    private BooleanProperty released;
-    private ObservableList<Worker> workers;
+    private final BooleanProperty active;
+    private final BooleanProperty initialized;
+    private final BooleanProperty released;
+    private final ObservableList<Worker> workers;
 
     protected AbstractActivity()
     {
         this.active = new SimpleBooleanProperty();
         this.released = new SimpleBooleanProperty();
+        this.initialized = new SimpleBooleanProperty(false);
         this.active.addListener(new ChangeListener<Boolean>()
         {
             public void changed(ObservableValue<? extends Boolean> source, Boolean oldValue, Boolean newValue)
@@ -67,6 +69,21 @@ public abstract class AbstractActivity<ViewType extends View>
     public BooleanProperty activeProperty()
     {
         return this.active;
+    }
+
+    public BooleanProperty initializedProperty()
+    {
+        return this.initialized;
+    }
+
+    public void setInitialized(boolean initialized)
+    {
+        this.initialized.set(initialized);
+    }
+
+    public boolean isInitialized()
+    {
+        return this.initialized.get();
     }
 
     public void release()
@@ -124,6 +141,7 @@ public abstract class AbstractActivity<ViewType extends View>
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initialize();
+        setInitialized(true);
     }
 
     protected void initialize() {
