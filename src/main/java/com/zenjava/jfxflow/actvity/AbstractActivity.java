@@ -1,5 +1,6 @@
 package com.zenjava.jfxflow.actvity;
 
+import com.zenjava.jfxflow.util.FXUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -10,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -113,6 +115,10 @@ public abstract class AbstractActivity<ViewType extends View>
 
     protected void deactivated()
     {
+    }
+
+    protected <T> T getChild(String id) {
+        return FXUtils.getChildByID((Parent) getView().toNode(), id);
     }
 
     protected void executeTask(Task task)
