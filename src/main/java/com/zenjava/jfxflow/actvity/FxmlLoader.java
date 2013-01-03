@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.util.BuilderFactory;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -13,12 +14,9 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 public class FxmlLoader {
-    private final Callback<Class<?>, Object> controllerFactory;
+    private Callback<Class<?>, Object> controllerFactory;
     private final Map<URL, Activity> activities = new HashMap<URL, Activity>();
-
-    public FxmlLoader(javafx.util.Callback<java.lang.Class<?>, java.lang.Object> controllerFactory) {
-        this.controllerFactory = controllerFactory;
-    }
+    private BuilderFactory builderFactory = new JavaFXBuilderFactory();
 
     @SuppressWarnings("unchecked")
     public <Type extends Activity> Type load(URL fxmlFile, ResourceBundle resources)
@@ -32,7 +30,7 @@ public class FxmlLoader {
     @SuppressWarnings("unchecked")
     public <Type extends Activity> void reload(URL fxmlFile, ResourceBundle resources)
             throws FxmlLoadException {
-        FXMLLoader loader = new FXMLLoader(fxmlFile, resources, new JavaFXBuilderFactory(), controllerFactory);
+        FXMLLoader loader = new FXMLLoader(fxmlFile, resources, builderFactory, controllerFactory);
         Node rootNode;
         try {
             rootNode = (Node) loader.load();
@@ -59,4 +57,11 @@ public class FxmlLoader {
         activities.put(fxmlFile, activity);
     }
 
+    public void setControllerFactory(Callback<Class<?>, Object> controllerFactory) {
+        this.controllerFactory = controllerFactory;
+    }
+
+    public void setBuilderFactory(BuilderFactory builderFactory) {
+        this.builderFactory = builderFactory;
+    }
 }

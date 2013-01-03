@@ -13,9 +13,10 @@ public class SpringPlaceResolver extends AbstractPlaceResolver {
 
     private FxmlLoader loader;
 
-    public SpringPlaceResolver(final ApplicationContext context) {
+    public SpringPlaceResolver(final ApplicationContext context, FxmlLoader fxmlLoader) {
         this.context = context;
-        this.loader = new FxmlLoader(new Callback<Class<?>, Object>() {
+        loader = fxmlLoader;
+        loader.setControllerFactory(new Callback<Class<?>, Object>() {
             public Object call(Class<?> aClass) {
                 return context.getBean(aClass);
             }
