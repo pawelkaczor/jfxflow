@@ -1,6 +1,5 @@
 package com.zenjava.jfxflow.dialog;
 
-import com.sun.javafx.css.StyleManager;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,29 +14,30 @@ import javafx.stage.Window;
 
 public class Dialog
 {
-    // needed since Popups are not skinnable in the normal way
-    static
-    {
-        StyleManager.getInstance().addUserAgentStylesheet(
-                Dialog.class.getResource("/styles/jfxflow-dialog.css").toExternalForm());
-    }
-
     private ReadOnlyObjectWrapper<DialogOwner> owner;
     private Popup popup;
     private StringProperty title;
     private ObjectProperty<Node> content;
     private BorderPane contentArea;
+    private String stylesheet;
 
     public Dialog()
     {
-        this(null);
+        this(null, null);
     }
 
-    public Dialog(String title)
+    public Dialog(String stylesheet) {
+        this(null, stylesheet);
+    }
+    public Dialog(String title, String stylesheet)
     {
         this.owner = new ReadOnlyObjectWrapper<DialogOwner>();
         this.popup = new Popup();
         this.title = new SimpleStringProperty(title);
+        this.stylesheet = stylesheet;
+        if (stylesheet == null) {
+            this.stylesheet = Dialog.class.getResource("/styles/jfxflow-dialog.css").toExternalForm();
+        }
         this.content = new SimpleObjectProperty<Node>();
 
         this.content.addListener(new ChangeListener<Node>()
@@ -142,6 +142,10 @@ public class Dialog
         }
     }
 
+    public BorderPane getContentArea() {
+        return contentArea;
+    }
+
     public void hide()
     {
         popup.hide();
@@ -152,6 +156,7 @@ public class Dialog
     {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("dialog");
+        root.getStylesheets().add(stylesheet);
 
         BorderPane header = new BorderPane();
         header.getStyleClass().add("header");
@@ -183,4 +188,13 @@ public class Dialog
 
         popup.getContent().add(root);
     }
+
+    public String getStylesheet() {
+        return stylesheet;
+    }
+
+    public void setStylesheet(String stylesheet) {
+        this.stylesheet = stylesheet;
+    }
+
 }
