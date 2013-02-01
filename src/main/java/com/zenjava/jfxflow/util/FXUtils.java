@@ -6,8 +6,10 @@ import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.stage.PopupBuilder;
 
@@ -115,5 +117,9 @@ public class FXUtils {
             }
         }
         return null;
+    }
+
+    public static void changeFontSize(Labeled node, int change) {
+        node.setFont(new Font(node.getFont().getName(), Font.getDefault().getSize() + change));
     }
 }
