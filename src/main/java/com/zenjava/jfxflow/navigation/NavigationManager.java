@@ -14,6 +14,8 @@ import javafx.collections.ObservableList;
  */
 public interface NavigationManager
 {
+    Place NOWHERE = new Place("");
+
     /**
      * Navigates to the specified place, making it the new current place. If a previous place was set then this is
      * added to the back history. If any forward history existed before this call then this will be discarded and the

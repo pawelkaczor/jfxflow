@@ -1,5 +1,6 @@
 package com.zenjava.jfxflow.actvity;
 
+import com.zenjava.jfxflow.navigation.NavigationManager;
 import com.zenjava.jfxflow.navigation.Place;
 import com.zenjava.jfxflow.navigation.PlaceResolver;
 import com.zenjava.jfxflow.transition.DefaultTransitionFactory;
@@ -17,6 +18,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+
+import static com.zenjava.jfxflow.navigation.NavigationManager.NOWHERE;
 
 public class ParentActivity<ViewType extends ParentView>
         extends AbstractActivity<ViewType>
@@ -118,7 +121,7 @@ public class ParentActivity<ViewType extends ParentView>
     {
         public void changed(ObservableValue<? extends Place> source, Place oldPlace, Place newPlace)
         {
-            if (newPlace != null)
+            if (newPlace != null && !newPlace.equals(NOWHERE))
             {
                 for (int i = placeResolvers.size() - 1; i >= 0; i--)
                 {
