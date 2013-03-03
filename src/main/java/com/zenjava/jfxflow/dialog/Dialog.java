@@ -12,6 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Popup;
 import javafx.stage.Window;
 
+import java.math.BigDecimal;
+
 public class Dialog
 {
     private ReadOnlyObjectWrapper<DialogOwner> owner;
@@ -20,17 +22,23 @@ public class Dialog
     private ObjectProperty<Node> content;
     private BorderPane contentArea;
     private String stylesheet;
+    private boolean headerVisible = true;
 
     public Dialog()
     {
-        this(null, null);
+        this(null, null, true);
     }
 
     public Dialog(String stylesheet) {
-        this(null, stylesheet);
+        this(null, stylesheet, true);
     }
-    public Dialog(String title, String stylesheet)
+    public Dialog(String stylesheet, boolean headerVisible) {
+        this(null, stylesheet, headerVisible);
+    }
+
+    public Dialog(String title, String stylesheet, boolean headerVisible)
     {
+        this.headerVisible = headerVisible;
         this.owner = new ReadOnlyObjectWrapper<DialogOwner>();
         this.popup = new Popup();
         this.title = new SimpleStringProperty(title);
@@ -133,7 +141,7 @@ public class Dialog
             final Window window = node.getScene().getWindow();
             popup.show(window);
             popup.setX(window.getX() + (window.getWidth() / 2) - (popup.getWidth() / 2));
-            popup.setY(window.getY() + (window.getHeight() / 2) - (popup.getHeight() / 2));
+            popup.setY(BigDecimal.ZERO.max(BigDecimal.valueOf(window.getY() + (window.getHeight() / 2) - (popup.getHeight() / 2))).intValue());
         }
         else
         {
@@ -158,29 +166,31 @@ public class Dialog
         root.getStyleClass().add("dialog");
         root.getStylesheets().add(stylesheet);
 
-        BorderPane header = new BorderPane();
-        header.getStyleClass().add("header");
+        if (headerVisible) {
+            BorderPane header = new BorderPane();
+            header.getStyleClass().add("header");
 
-        Label titleLabel = new Label(title.get());
-        titleLabel.textProperty().bind(title);
-        titleLabel.getStyleClass().add("title");
-        header.setLeft(titleLabel);
+            Label titleLabel = new Label(title.get());
+            titleLabel.textProperty().bind(title);
+            titleLabel.getStyleClass().add("title");
+            header.setLeft(titleLabel);
 
-        Button closeButton = new Button("Close");
-        Label closeIcon = new Label();
-        closeIcon.getStyleClass().add("close-icon");
-        closeButton.setGraphic(closeIcon);
-        closeButton.getStyleClass().add("close-button");
-        closeButton.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent event)
+            Button closeButton = new Button("Close");
+            Label closeIcon = new Label();
+            closeIcon.getStyleClass().add("close-icon");
+            closeButton.setGraphic(closeIcon);
+            closeButton.getStyleClass().add("close-button");
+            closeButton.setOnAction(new EventHandler<ActionEvent>()
             {
-                hide();
-            }
-        });
-        header.setRight(closeButton);
+                public void handle(ActionEvent event)
+                {
+                    hide();
+                }
+            });
+            header.setRight(closeButton);
 
-        root.setTop(header);
+            root.setTop(header);
+        }
 
         contentArea = new BorderPane();
         contentArea.getStyleClass().add("content");
@@ -197,4 +207,11 @@ public class Dialog
         this.stylesheet = stylesheet;
     }
 
+    public boolean isHeaderVisible() {
+        return headerVisible;
+    }
+
+    public void setHeaderVisible(boolean headerVisible) {
+        this.headerVisible = headerVisible;
+    }
 }

@@ -14,6 +14,7 @@ public class DialogFactory implements TransitionFactory {
 
     private ParentActivity parentActivity;
     private String stylesheet;
+    private boolean headerVisible = true;
 
     public DialogFactory(ParentActivity parentActivity) {
         this.parentActivity = parentActivity;
@@ -31,7 +32,7 @@ public class DialogFactory implements TransitionFactory {
 
             public void execute() {
                 if (toActivity != null) {
-                    Dialog dialog = new Dialog(stylesheet);
+                    Dialog dialog = new Dialog(stylesheet, headerVisible);
                     dialog.setContent(toActivity.getView().toNode());
                     dialog.show(contentArea);
                     dialog.showingProperty().addListener(new ChangeListener<Boolean>() {
@@ -53,5 +54,9 @@ public class DialogFactory implements TransitionFactory {
 
     public void setStylesheet(String stylesheet) {
         this.stylesheet = stylesheet;
+    }
+
+    public void setHeaderVisible(boolean headerVisible) {
+        this.headerVisible = headerVisible;
     }
 }
