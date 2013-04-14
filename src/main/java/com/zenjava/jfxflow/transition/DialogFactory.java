@@ -8,6 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 
 public class DialogFactory implements TransitionFactory {
@@ -33,7 +34,7 @@ public class DialogFactory implements TransitionFactory {
             public void execute() {
                 if (toActivity != null) {
                     Dialog dialog = new Dialog(stylesheet, headerVisible);
-                    dialog.setContent(toActivity.getView().toNode());
+                    dialog.setContent((Parent) toActivity.getView().toNode());
                     dialog.show(contentArea);
                     dialog.showingProperty().addListener(new ChangeListener<Boolean>() {
                         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {

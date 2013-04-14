@@ -6,69 +6,69 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Popup;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
 
-public class Dialog
-{
+public class Dialog {
     private ReadOnlyObjectWrapper<DialogOwner> owner;
-    private Popup popup;
+    private Stage stage;
     private StringProperty title;
-    private ObjectProperty<Node> content;
+    private ObjectProperty<Parent> content;
     private BorderPane contentArea;
     private String stylesheet;
     private boolean headerVisible = true;
+    private BorderPane root;
 
-    public Dialog()
-    {
+    public Dialog() {
         this(null, null, true);
     }
 
     public Dialog(String stylesheet) {
         this(null, stylesheet, true);
     }
+
     public Dialog(String stylesheet, boolean headerVisible) {
         this(null, stylesheet, headerVisible);
     }
 
-    public Dialog(String title, String stylesheet, boolean headerVisible)
-    {
+    public Dialog(String title, String stylesheet, boolean headerVisible) {
         this.headerVisible = headerVisible;
         this.owner = new ReadOnlyObjectWrapper<DialogOwner>();
-        this.popup = new Popup();
+        this.stage = new Stage(StageStyle.TRANSPARENT);
         this.title = new SimpleStringProperty(title);
         this.stylesheet = stylesheet;
         if (stylesheet == null) {
             this.stylesheet = Dialog.class.getResource("/styles/jfxflow-dialog.css").toExternalForm();
         }
-        this.content = new SimpleObjectProperty<Node>();
+        this.content = new SimpleObjectProperty<Parent>();
 
-        this.content.addListener(new ChangeListener<Node>()
-        {
-            public void changed(ObservableValue<? extends Node> source, Node oldNode, Node newNode)
-            {
+
+        this.content.addListener(new ChangeListener<Parent>() {
+            public void changed(ObservableValue<? extends Parent> source, Parent oldNode, Parent newNode) {
                 contentArea.setCenter(newNode);
+                Scene scene = new Scene(root);
+                scene.setFill(Color.TRANSPARENT);
+                stage.setScene(scene);
             }
         });
 
-        this.popup.showingProperty().addListener(new ChangeListener<Boolean>()
-        {
-            public void changed(ObservableValue<? extends Boolean> source, Boolean oldValue, Boolean newValue)
-            {
+        this.stage.showingProperty().addListener(new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> source, Boolean oldValue, Boolean newValue) {
                 DialogOwner owner = Dialog.this.owner.get();
-                if (owner != null)
-                {
-                    if (newValue)
-                    {
+                if (owner != null) {
+                    if (newValue) {
                         owner.addDialog(Dialog.this);
-                    }
-                    else
-                    {
+                    } else {
                         owner.removeDialog(Dialog.this);
                     }
                 }
@@ -79,90 +79,72 @@ public class Dialog
     }
 
     public ReadOnlyBooleanProperty showingProperty() {
-        return this.popup.showingProperty();
+        return this.stage.showingProperty();
     }
 
-    public ReadOnlyObjectProperty<DialogOwner> ownerProperty()
-    {
+    public ReadOnlyObjectProperty<DialogOwner> ownerProperty() {
         return owner;
     }
 
-    public DialogOwner getOwner()
-    {
+    public DialogOwner getOwner() {
         return owner.get();
     }
 
-    public StringProperty titleProperty()
-    {
+    public StringProperty titleProperty() {
         return title;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title.get();
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title.set(title);
     }
 
-    public ObjectProperty<Node> contentProperty()
-    {
+    public ObjectProperty<Parent> contentProperty() {
         return content;
     }
 
-    public Node getContent()
-    {
+    public Node getContent() {
         return content.get();
     }
 
-    public void setContent(Node content)
-    {
+    public void setContent(Parent content) {
         this.content.set(content);
     }
 
-    public void show(Node node)
-    {
+    public void show(Node node) {
         DialogOwner owner = null;
         Node nextNode = node;
-        while (nextNode != null)
-        {
-            if (nextNode instanceof DialogOwner)
-            {
+        while (nextNode != null) {
+            if (nextNode instanceof DialogOwner) {
                 owner = (DialogOwner) nextNode;
             }
             nextNode = nextNode.getParent();
         }
 
-        if (owner != null)
-        {
+        if (owner != null) {
             this.owner.set(owner);
             final Window window = node.getScene().getWindow();
-            popup.show(window);
-            popup.setX(window.getX() + (window.getWidth() / 2) - (popup.getWidth() / 2));
-            popup.setY(BigDecimal.ZERO.max(BigDecimal.valueOf(window.getY() + (window.getHeight() / 2) - (popup.getHeight() / 2))).intValue());
-        }
-        else
-        {
+            stage.initOwner(window);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.sizeToScene();
+            stage.show();
+            stage.setX(window.getX() + (window.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(BigDecimal.ZERO.max(BigDecimal.valueOf(window.getY() + (window.getHeight() / 2) - (stage.getHeight() / 2))).intValue());
+        } else {
             throw new NoDialogOwnerException(String.format(
                     "Node '%s' must have a parent that implements DialogOwner to be able to show a Dialog", node));
         }
     }
 
-    public BorderPane getContentArea() {
-        return contentArea;
+    public void hide() {
+        stage.hide();
     }
 
-    public void hide()
-    {
-        popup.hide();
-    }
-
-
-    protected void buildSkin()
-    {
-        BorderPane root = new BorderPane();
+    protected void buildSkin() {
+        root = new BorderPane();
         root.getStyleClass().add("dialog");
         root.getStylesheets().add(stylesheet);
 
@@ -180,10 +162,8 @@ public class Dialog
             closeIcon.getStyleClass().add("close-icon");
             closeButton.setGraphic(closeIcon);
             closeButton.getStyleClass().add("close-button");
-            closeButton.setOnAction(new EventHandler<ActionEvent>()
-            {
-                public void handle(ActionEvent event)
-                {
+            closeButton.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent event) {
                     hide();
                 }
             });
@@ -195,8 +175,6 @@ public class Dialog
         contentArea = new BorderPane();
         contentArea.getStyleClass().add("content");
         root.setCenter(contentArea);
-
-        popup.getContent().add(root);
     }
 
     public String getStylesheet() {
