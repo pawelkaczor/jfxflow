@@ -10,6 +10,7 @@ public class Place
 {
     private StringProperty name;
     private Map<String, Object> parameters;
+    private boolean cacheable = true;
 
     public Place(String name)
     {
@@ -49,5 +50,13 @@ public class Place
     public String toString()
     {
         return String.format("Place[%s]", getName());
+    }
+
+    public boolean isCacheable() {
+        return cacheable;
+    }
+
+    public void setCacheable(boolean cacheable) {
+        this.cacheable = cacheable;
     }
 }

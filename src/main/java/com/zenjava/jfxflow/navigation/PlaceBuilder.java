@@ -4,26 +4,28 @@ import javafx.util.Builder;
 
 public class PlaceBuilder implements Builder<Place>
 {
-    public static PlaceBuilder create()
-    {
-        return new PlaceBuilder();
-    }
-
     private Place place;
 
-    public PlaceBuilder()
-    {
+    public PlaceBuilder() {
         this(null);
     }
 
-    public PlaceBuilder(String placeName)
-    {
+    public PlaceBuilder(String placeName) {
         this.place = new Place(placeName);
+    }
+
+    public static PlaceBuilder create() {
+        return new PlaceBuilder();
     }
 
     public PlaceBuilder name(String name)
     {
         place.setName(name);
+        return this;
+    }
+
+    public PlaceBuilder cacheable(boolean cacheable) {
+        place.setCacheable(cacheable);
         return this;
     }
 
