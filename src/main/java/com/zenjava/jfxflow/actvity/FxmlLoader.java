@@ -9,26 +9,14 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class FxmlLoader {
     private Callback<Class<?>, Object> controllerFactory;
-    private final Map<URL, Activity> activities = new HashMap<URL, Activity>();
     private BuilderFactory builderFactory = new JavaFXBuilderFactory();
 
     @SuppressWarnings("unchecked")
     public <Type extends Activity> Type load(URL fxmlFile, ResourceBundle resources)
-            throws FxmlLoadException {
-        if (!activities.containsKey(fxmlFile)) {
-            reload(fxmlFile, resources);
-        }
-        return (Type) activities.get(fxmlFile);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <Type extends Activity> void reload(URL fxmlFile, ResourceBundle resources)
             throws FxmlLoadException {
         FXMLLoader loader = new FXMLLoader(fxmlFile, resources, builderFactory, controllerFactory);
         Node rootNode;
@@ -50,11 +38,7 @@ public class FxmlLoader {
                 }
             }
         }
-        registerActivity(fxmlFile, controller);
-    }
-
-    private <Type extends Activity> void registerActivity(URL fxmlFile, Type activity) {
-        activities.put(fxmlFile, activity);
+        return controller;
     }
 
     public void setControllerFactory(Callback<Class<?>, Object> controllerFactory) {
