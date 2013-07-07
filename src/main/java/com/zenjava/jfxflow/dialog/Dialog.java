@@ -3,13 +3,9 @@ package com.zenjava.jfxflow.dialog;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -44,7 +40,7 @@ public class Dialog {
     public Dialog(String title, String stylesheet, boolean headerVisible) {
         this.headerVisible = headerVisible;
         this.owner = new ReadOnlyObjectWrapper<DialogOwner>();
-        this.stage = new Stage(StageStyle.TRANSPARENT);
+        this.stage = new Stage(headerVisible ? StageStyle.UTILITY : StageStyle.UNDECORATED);
         this.title = new SimpleStringProperty(title);
         this.stylesheet = stylesheet;
         if (stylesheet == null) {
@@ -147,30 +143,6 @@ public class Dialog {
         root = new BorderPane();
         root.getStyleClass().add("dialog");
         root.getStylesheets().add(stylesheet);
-
-        if (headerVisible) {
-            BorderPane header = new BorderPane();
-            header.getStyleClass().add("header");
-
-            Label titleLabel = new Label(title.get());
-            titleLabel.textProperty().bind(title);
-            titleLabel.getStyleClass().add("title");
-            header.setLeft(titleLabel);
-
-            Button closeButton = new Button("Close");
-            Label closeIcon = new Label();
-            closeIcon.getStyleClass().add("close-icon");
-            closeButton.setGraphic(closeIcon);
-            closeButton.getStyleClass().add("close-button");
-            closeButton.setOnAction(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent event) {
-                    hide();
-                }
-            });
-            header.setRight(closeButton);
-
-            root.setTop(header);
-        }
 
         contentArea = new BorderPane();
         contentArea.getStyleClass().add("content");
