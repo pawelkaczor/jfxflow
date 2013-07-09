@@ -123,12 +123,24 @@ public class Dialog {
         if (owner != null) {
             this.owner.set(owner);
             final Window window = node.getScene().getWindow();
+            stage.widthProperty().addListener(new ChangeListener<Number>() {
+                public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+                    if (Double.isNaN((Double) oldValue)) {
+                        stage.setX(window.getX() + (window.getWidth() / 2) - (stage.getWidth() / 2));
+                    }
+                }
+            });
+            stage.heightProperty().addListener(new ChangeListener<Number>() {
+                public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+                    if (Double.isNaN((Double) oldValue)) {
+                        stage.setY(BigDecimal.ZERO.max(BigDecimal.valueOf(window.getY() + (window.getHeight() / 2) - (stage.getHeight() / 2))).intValue());
+                    }
+                }
+            });
             stage.initOwner(window);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.sizeToScene();
             stage.show();
-            stage.setX(window.getX() + (window.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(BigDecimal.ZERO.max(BigDecimal.valueOf(window.getY() + (window.getHeight() / 2) - (stage.getHeight() / 2))).intValue());
         } else {
             throw new NoDialogOwnerException(String.format(
                     "Node '%s' must have a parent that implements DialogOwner to be able to show a Dialog", node));

@@ -18,8 +18,11 @@ public class PlaceBuilder implements Builder<Place>
         return new PlaceBuilder();
     }
 
-    public PlaceBuilder name(String name)
-    {
+    public static Place place(String name) {
+        return create().name(name).build();
+    }
+
+    public PlaceBuilder name(String name) {
         place.setName(name);
         return this;
     }
@@ -29,8 +32,7 @@ public class PlaceBuilder implements Builder<Place>
         return this;
     }
 
-    public PlaceBuilder parameter(String name, Object value)
-    {
+    public PlaceBuilder parameter(String name, Object value) {
         this.place.getParameters().put(name, value);
         return this;
     }
