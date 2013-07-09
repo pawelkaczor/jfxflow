@@ -139,6 +139,7 @@ public class Dialog {
             });
             stage.initOwner(window);
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle(getTitle());
             stage.sizeToScene();
             stage.show();
         } else {

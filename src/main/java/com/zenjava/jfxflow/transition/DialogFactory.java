@@ -1,6 +1,7 @@
 package com.zenjava.jfxflow.transition;
 
 import com.zenjava.jfxflow.actvity.Activity;
+import com.zenjava.jfxflow.actvity.DialogActivity;
 import com.zenjava.jfxflow.actvity.ParentActivity;
 import com.zenjava.jfxflow.actvity.Transition;
 import com.zenjava.jfxflow.dialog.Dialog;
@@ -33,8 +34,13 @@ public class DialogFactory implements TransitionFactory {
 
             public void execute() {
                 if (toActivity != null) {
-                    Dialog dialog = new Dialog(stylesheet, headerVisible);
-                    dialog.setContent((Parent) toActivity.getView().toNode());
+                    String title = null;
+                    if (toActivity instanceof DialogActivity) {
+                        title = ((DialogActivity) toActivity).getTitle();
+                    }
+                    Dialog dialog = new Dialog(title, stylesheet, headerVisible);
+                    Parent content = (Parent) toActivity.getView().toNode();
+                    dialog.setContent(content);
                     dialog.show(contentArea);
                     dialog.showingProperty().addListener(new ChangeListener<Boolean>() {
                         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
