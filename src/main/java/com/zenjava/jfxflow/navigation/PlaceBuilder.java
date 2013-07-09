@@ -19,7 +19,11 @@ public class PlaceBuilder implements Builder<Place>
     }
 
     public static Place place(String name) {
-        return create().name(name).build();
+        return place(name, true);
+    }
+
+    public static Place place(String name, boolean cacheable) {
+        return create().name(name).cacheable(cacheable).build();
     }
 
     public PlaceBuilder name(String name) {
