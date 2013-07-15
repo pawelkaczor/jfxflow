@@ -37,7 +37,7 @@ public class Dialog {
         this(null, stylesheet, headerVisible);
     }
 
-    public Dialog(String title, String stylesheet, boolean headerVisible) {
+    public Dialog(String title, final String stylesheet, boolean headerVisible) {
         this.headerVisible = headerVisible;
         this.owner = new ReadOnlyObjectWrapper<DialogOwner>();
         this.stage = new Stage(headerVisible ? StageStyle.UTILITY : StageStyle.UNDECORATED);
@@ -67,6 +67,9 @@ public class Dialog {
                     } else {
                         owner.removeDialog(Dialog.this);
                     }
+                }
+                if (newValue) {
+                    stage.getScene().getStylesheets().addAll(stylesheet);
                 }
             }
         });
@@ -155,8 +158,6 @@ public class Dialog {
     protected void buildSkin() {
         root = new BorderPane();
         root.getStyleClass().add("dialog");
-        root.getStylesheets().add(stylesheet);
-
         contentArea = new BorderPane();
         contentArea.getStyleClass().add("content");
         root.setCenter(contentArea);
