@@ -3,7 +3,6 @@ package com.zenjava.jfxflow.util;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Labeled;
@@ -21,10 +20,9 @@ public class FXUtils {
                 .build();
     }
 
-    public static <X, Y> ObservableList<XYChart.Data<X, Y>> getFirstSeries(LineChart<X, Y> chart) {
+    public static <X, Y> ObservableList<XYChart.Data<X, Y>> getFirstSeries(XYChart<X, Y> chart) {
         return chart.getData().get(0).getData();
     }
-
 
     /**
      * Find a {@link javafx.scene.Node} within a {@link javafx.scene.Parent} by it's ID.
