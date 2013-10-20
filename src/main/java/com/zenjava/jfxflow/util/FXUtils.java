@@ -47,6 +47,16 @@ public class FXUtils {
     }
 
     @SuppressWarnings("unchecked")
+    public static <T> T getChildByStyleClass(Parent parent, String id) throws WidgetNotFoundException {
+        T child = findChildByStyleClass(parent, id);
+        if (child == null) {
+            throw new WidgetNotFoundException(parent, id);
+        } else {
+            return child;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     private static <T> T findChildByID(Parent parent, String id) throws WidgetNotFoundException {
 
         String nodeId;
@@ -79,7 +89,7 @@ public class FXUtils {
                 for (Node itemNode : splitPane.getItems()) {
                     nodeId = itemNode.idProperty().get();
 
-                    if (nodeId != null && id.equals(id)) {
+                    if (nodeId != null && nodeId.equals(id)) {
                         return (T) itemNode;
                     }
 
@@ -108,6 +118,77 @@ public class FXUtils {
                 }
             } else if (node instanceof Parent) {
                 T child = findChildByID((Parent) node, id);
+
+                if (child != null) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T findChildByStyleClass(Parent parent, String styleClass) throws WidgetNotFoundException {
+
+        ObservableList<String> styleClasses;
+
+        if (parent instanceof TitledPane) {
+            TitledPane titledPane = (TitledPane) parent;
+            Node content = titledPane.getContent();
+            styleClasses = content.getStyleClass();
+
+            if (styleClasses != null && styleClasses.contains(styleClass)) {
+                return (T) content;
+            }
+
+            if (content instanceof Parent) {
+                T child = findChildByStyleClass((Parent) content, styleClass);
+                if (child != null) {
+                    return child;
+                }
+            }
+        }
+
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            styleClasses = node.getStyleClass();
+            if (styleClasses != null && styleClasses.contains(styleClass)) {
+                return (T) node;
+            }
+
+            if (node instanceof SplitPane) {
+                SplitPane splitPane = (SplitPane) node;
+                for (Node itemNode : splitPane.getItems()) {
+                    styleClasses = itemNode.getStyleClass();
+
+                    if (styleClasses != null && styleClasses.contains(styleClass)) {
+                        return (T) itemNode;
+                    }
+
+                    if (itemNode instanceof Parent) {
+                        T child = findChildByStyleClass((Parent) itemNode, styleClass);
+
+                        if (child != null) {
+                            return child;
+                        }
+                    }
+                }
+            } else if (node instanceof Accordion) {
+                Accordion accordion = (Accordion) node;
+                for (TitledPane titledPane : accordion.getPanes()) {
+                    styleClasses = titledPane.getStyleClass();
+
+                    if (styleClasses != null && styleClasses.contains(styleClass)) {
+                        return (T) titledPane;
+                    }
+
+                    T child = findChildByStyleClass(titledPane, styleClass);
+
+                    if (child != null) {
+                        return child;
+                    }
+                }
+            } else if (node instanceof Parent) {
+                T child = findChildByStyleClass((Parent) node, styleClass);
 
                 if (child != null) {
                     return child;
