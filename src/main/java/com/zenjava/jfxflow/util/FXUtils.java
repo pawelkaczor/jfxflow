@@ -4,13 +4,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Labeled;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.stage.PopupBuilder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class FXUtils {
 
@@ -198,7 +199,77 @@ public class FXUtils {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    private static void addChildsByStyleClass(Parent parent, String styleClass, Collection result) throws WidgetNotFoundException {
+
+        ObservableList<String> styleClasses;
+
+        if (parent instanceof TitledPane) {
+            TitledPane titledPane = (TitledPane) parent;
+            Node content = titledPane.getContent();
+            styleClasses = content.getStyleClass();
+
+            if (styleClasses != null && styleClasses.contains(styleClass)) {
+                result.add(content);
+            }
+
+            if (content instanceof Parent) {
+                addChildsByStyleClass((Parent) content, styleClass, result);
+            }
+        }
+
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            styleClasses = node.getStyleClass();
+            if (styleClasses != null && styleClasses.contains(styleClass)) {
+                result.add(node);
+            }
+
+            if (node instanceof SplitPane) {
+                SplitPane splitPane = (SplitPane) node;
+                for (Node itemNode : splitPane.getItems()) {
+                    styleClasses = itemNode.getStyleClass();
+
+                    if (styleClasses != null && styleClasses.contains(styleClass)) {
+                        result.add(itemNode);
+                    }
+
+                    if (itemNode instanceof Parent) {
+                        addChildsByStyleClass((Parent) itemNode, styleClass, result);
+                    }
+                }
+            } else if (node instanceof Accordion) {
+                Accordion accordion = (Accordion) node;
+                for (TitledPane titledPane : accordion.getPanes()) {
+                    styleClasses = titledPane.getStyleClass();
+
+                    if (styleClasses != null && styleClasses.contains(styleClass)) {
+                        result.add(titledPane);
+                    }
+
+                    addChildsByStyleClass(titledPane, styleClass, result);
+                }
+            } else if (node instanceof Parent) {
+                addChildsByStyleClass((Parent) node, styleClass, result);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> findChildsByStyleClass(Parent parent, String styleClass) throws WidgetNotFoundException {
+        List<T> result = new ArrayList<T>();
+        addChildsByStyleClass(parent, styleClass, result);
+        return result;
+    }
+
     public static void changeFontSize(Labeled node, int change) {
         node.setFont(new Font(node.getFont().getName(), Font.getDefault().getSize() + change));
     }
+
+    public static void changePrefHeightOfChildTextFields(Parent parent, String styleClass, int prefHeight) {
+        Collection<TextField> textFields = findChildsByStyleClass(parent, styleClass);
+        for (TextField textField : textFields) {
+            textField.setPrefHeight(prefHeight);
+        }
+    }
+
 }
