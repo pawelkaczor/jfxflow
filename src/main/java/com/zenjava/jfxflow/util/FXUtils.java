@@ -265,11 +265,19 @@ public class FXUtils {
         node.setFont(new Font(node.getFont().getName(), Font.getDefault().getSize() + change));
     }
 
+    public static void changeFontSize(Parent parent, String styleClass, int change) {
+        Collection<Labeled> nodes = findChildsByStyleClass(parent, styleClass);
+        for (Labeled node : nodes) {
+            changeFontSize(node, change);
+        }
+    }
+
     public static void changePrefHeightOfChildTextFields(Parent parent, String styleClass, int prefHeight) {
         Collection<TextField> textFields = findChildsByStyleClass(parent, styleClass);
         for (TextField textField : textFields) {
             textField.setPrefHeight(prefHeight);
         }
     }
+
 
 }
