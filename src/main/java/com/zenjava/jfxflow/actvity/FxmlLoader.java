@@ -14,11 +14,15 @@ import java.util.ResourceBundle;
 public class FxmlLoader {
     private Callback<Class<?>, Object> controllerFactory;
     private BuilderFactory builderFactory = new JavaFXBuilderFactory();
+    private ClassLoader classLoader;
 
     @SuppressWarnings("unchecked")
     public <Type extends Activity> Type load(URL fxmlFile, ResourceBundle resources)
             throws FxmlLoadException {
         FXMLLoader loader = new FXMLLoader(fxmlFile, resources, builderFactory, controllerFactory);
+        if (classLoader != null) {
+            loader.setClassLoader(classLoader);
+        }
         Node rootNode;
         try {
             rootNode = (Node) loader.load();
@@ -26,7 +30,7 @@ public class FxmlLoader {
             throw new FxmlLoadException("", e);
         }
 
-        Type controller = (Type) loader.getController();
+        Type controller = loader.getController();
         if (controller instanceof InjectedView) {
             if (rootNode instanceof View) {
                 ((InjectedView) controller).setView((View) rootNode);
@@ -48,4 +52,9 @@ public class FxmlLoader {
     public void setBuilderFactory(BuilderFactory builderFactory) {
         this.builderFactory = builderFactory;
     }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
 }
