@@ -4,12 +4,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Place
 {
     private StringProperty name;
     private Map<String, Object> parameters;
+    private Locale locale = Locale.getDefault();
     private boolean cacheable = true;
 
     public Place(String name)
@@ -58,5 +60,13 @@ public class Place
 
     public void setCacheable(boolean cacheable) {
         this.cacheable = cacheable;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }

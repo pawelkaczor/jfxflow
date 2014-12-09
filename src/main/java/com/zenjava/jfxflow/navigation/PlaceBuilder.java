@@ -2,6 +2,8 @@ package com.zenjava.jfxflow.navigation;
 
 import javafx.util.Builder;
 
+import java.util.Locale;
+
 public class PlaceBuilder implements Builder<Place>
 {
     private Place place;
@@ -44,5 +46,10 @@ public class PlaceBuilder implements Builder<Place>
     public Place build()
     {
         return place;
+    }
+
+    public PlaceBuilder locale(Locale locale) {
+        this.place.setLocale(locale);
+        return this;
     }
 }
